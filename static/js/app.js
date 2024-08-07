@@ -1,13 +1,14 @@
 // Build the metadata panel
 function buildMetadata(sample) {
   d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
-
     // get the metadata field
     let metadata = data.metadata;
+    console.log("Metadata:", metadata);  // Log metadata
 
     // Filter the metadata for the object with the desired sample number
     let resultArray = metadata.filter(sampleObj => sampleObj.id == sample);
     let result = resultArray[0];
+    console.log("Filtered Metadata:", result);  // Log filtered metadata
 
     // Use d3 to select the panel with id of `#sample-metadata`
     let PANEL = d3.select("#sample-metadata");
@@ -26,18 +27,22 @@ function buildMetadata(sample) {
 // function to build both charts
 function buildCharts(sample) {
   d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
-
     // Get the samples field
     let samples = data.samples;
+    console.log("Samples:", samples);  // Log samples
 
     // Filter the samples for the object with the desired sample number
     let resultArray = samples.filter(sampleObj => sampleObj.id == sample);
     let result = resultArray[0];
+    console.log("Filtered Sample Data:", result);  // Log filtered sample data
 
     // Get the otu_ids, otu_labels, and sample_values
     let otu_ids = result.otu_ids;
     let otu_labels = result.otu_labels;
     let sample_values = result.sample_values;
+    console.log("OTU IDs:", otu_ids);  // Log OTU IDs
+    console.log("OTU Labels:", otu_labels);  // Log OTU labels
+    console.log("Sample Values:", sample_values);  // Log sample values
 
     // Build a Bubble Chart
     let bubbleData = [{
@@ -65,6 +70,7 @@ function buildCharts(sample) {
 
     // For the Bar Chart, map the otu_ids to a list of strings for your yticks
     let yticks = otu_ids.slice(0, 10).map(otuID => `OTU ${otuID}`).reverse();
+    console.log("Y Ticks for Bar Chart:", yticks);  // Log Y ticks
 
     // Build a Bar Chart
     let barData = [{
@@ -89,34 +95,34 @@ function buildCharts(sample) {
 // Function to run on page load
 function init() {
   d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
+    // Get the names field
+    let sampleNames = data.names;
+    console.log("Sample Names:", sampleNames);  // Log sample names
 
-  // Get the names field
-  let sampleNames = data.names;
+    // Use d3 to select the dropdown with id of `#selDataset`
+    let selector = d3.select("#selDataset");
 
-  // Use d3 to select the dropdown with id of `#selDataset`
-  let selector = d3.select("#selDataset");
+    // Use the list of sample names to populate the select options
+    sampleNames.forEach((sample) => {
+      selector
+        .append("option")
+        .text(sample)
+        .property("value", sample);
+    });
 
-  // Use the list of sample names to populate the select options
-  // Hint: Inside a loop, you will need to use d3 to append a new
-  // option for each sample name.
-  sampleNames.forEach((sample) => {
-    d3.select("#selDataset")
-      .append("option")
-      .text(sample)
-      .property("value", sample);
-  });
+    // Get the first sample from the list
+    let firstSample = sampleNames[0];
+    console.log("Initial Sample Selected:", firstSample);  // Log the first sample selected
 
-  // Get the first sample from the list
-  let firstSample = sampleNames[0];
-
-  // Build charts and metadata panel with the first sample
-  buildCharts(firstSample);
-  buildMetadata(firstSample);
+    // Build charts and metadata panel with the first sample
+    buildCharts(firstSample);
+    buildMetadata(firstSample);
   });
 }
 
 // Function for event listener
 function optionChanged(newSample) {
+  console.log("New Sample Selected:", newSample);  // Log the new sample selected
   // Build charts and metadata panel each time a new sample is selected
   buildCharts(newSample);
   buildMetadata(newSample);
